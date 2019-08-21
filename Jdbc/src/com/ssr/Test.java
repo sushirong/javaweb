@@ -8,7 +8,7 @@ import java.sql.*;
  * @version: 1.0
  * @description：TODO
  */
-public class test {
+public class Test {
     public static void main(String[] args) throws SQLException {
 
         Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ssr","root","root");
