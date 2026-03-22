@@ -22,6 +22,25 @@ public class UserInfoDao {
 
 
 
+    public Integer updateUserInfo(UserInfo userInfo) {
+        Connection connection = DruidUtil.getConnection();
+        QueryRunner queryRunner = new QueryRunner();
+        String sql = "UPDATE userinfo SET real_name=?, age=?, phone=?, gender=?, `desc`=? WHERE user_id=?";
+        Object[] params = new Object[]{userInfo.getRealName(), userInfo.getAge(), userInfo.getPhone(),
+                userInfo.getGender(), userInfo.getDesc(), userInfo.getUserId()};
+        int result = 0;
+        try {
+            if (connection != null) {
+                result = queryRunner.update(connection, sql, params);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DruidUtil.close(connection);
+        }
+        return result;
+    }
+
     public Integer addUserInfo(UserInfo userInfo){
 
         Connection connection = DruidUtil.getConnection();

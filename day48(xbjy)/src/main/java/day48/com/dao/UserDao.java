@@ -21,6 +21,21 @@ import java.util.Map;
 public class UserDao {
 
 
+    public Integer updateUser(User user) {
+        Connection connection = DruidUtil.getConnection();
+        String sql = "UPDATE user SET is_secret=?, dept_id=? WHERE id=?";
+        QueryRunner queryRunner = new QueryRunner();
+        Integer result = 0;
+        try {
+            result = queryRunner.update(connection, sql, new Object[]{user.getIsSecret(), user.getDeptId(), user.getId()});
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DruidUtil.close(connection);
+        }
+        return result;
+    }
+
     public User getUser(String username,String password){
 
         Connection connection = DruidUtil.getConnection();

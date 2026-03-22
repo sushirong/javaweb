@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import day48.com.pojo.PageBean;
 import day48.com.pojo.ResultInfo;
 import day48.com.pojo.User;
+import day48.com.pojo.UserInfo;
 import day48.com.service.UserInfoService;
 import day48.com.service.UserService;
 import day48.com.utils.MailUtil;
@@ -183,6 +184,49 @@ public class UserServlet extends BaseServlet {
         PageBean<Map<String, Object>> pageBean = info.selectPgae(realName, currentPage, size);
 
         writeResult(response, pageBean);
+    }
+
+    public void updateInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        String userId = request.getParameter("userId");
+        String realName = request.getParameter("realName");
+        String ageParam = request.getParameter("age");
+        String phone = request.getParameter("phone");
+        String gender = request.getParameter("gender");
+        String desc = request.getParameter("desc");
+        String deptIdParam = request.getParameter("deptId");
+        String isSecret = request.getParameter("isSecret");
+
+        ResultInfo info = new ResultInfo();
+
+        try {
+            User user = new User();
+            user.setId(Integer.valueOf(userId));
+            user.setDeptId(deptIdParam != null && !deptIdParam.isEmpty() ? Integer.valueOf(deptIdParam) : null);
+            user.setIsSecret(isSecret != null ? isSecret : "0");
+
+            UserInfo userInfo = new UserInfo();
+            userInfo.setUserId(Integer.valueOf(userId));
+            userInfo.setRealName(realName);
+            userInfo.setAge(ageParam != null && !ageParam.isEmpty() ? Integer.valueOf(ageParam) : null);
+            userInfo.setPhone(phone);
+            userInfo.setGender(gender);
+            userInfo.setDesc(desc);
+
+            Integer result = service.updateUserInfo(user, userInfo);
+            if (result > 0) {
+                info.setFlag(true);
+                info.setMsg("修改成功");
+            } else {
+                info.setFlag(false);
+                info.setMsg("修改失败");
+            }
+        } catch (NumberFormatException e) {
+            info.setFlag(false);
+            info.setMsg("参数格式错误");
+        }
+
+        writeResult(response, info);
     }
 
     public void selectDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

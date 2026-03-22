@@ -183,7 +183,8 @@
                             <div class="col-xs-12 col-sm-9">
 
                                 <div class="space-12"></div>
-                                <form role="form">
+                                <form id="profileForm" role="form">
+                                    <input type="hidden" name="userId" value="${map.id}">
                                     <div class="profile-user-info profile-user-info-striped">
 
                                         <div class="profile-info-row">
@@ -191,7 +192,7 @@
 
                                             <div class="profile-info-value">
                                                 <div class="col-sm-9">
-                                                    <input type="text" placeholder="Username"
+                                                    <input type="text" name="realName" placeholder="Username"
                                                            class="col-xs-10 col-sm-5" value="${map.real_name}">
                                                 </div>
 
@@ -203,7 +204,7 @@
                                             <div class="profile-info-value">
 
                                                 <div class="col-sm-9">
-                                                    <input type="text" placeholder="Telephone"
+                                                    <input type="text" name="phone" placeholder="Telephone"
                                                            class="col-xs-10 col-sm-5" value="${map.phone}">
                                                 </div>
                                             </div>
@@ -215,8 +216,8 @@
 
                                                 <div class="col-sm-9">
                                                     <label style="margin:10px 0 0 0 ">
-                                                        <input name="switch-field-1" class="ace ace-switch ace-switch-6"
-                                                               type="checkbox">
+                                                        <input name="isSecret" id="isSecretCheck" class="ace ace-switch ace-switch-6"
+                                                               type="checkbox" value="1" ${map.is_secret == '1' ? 'checked' : ''}>
                                                         <span class="lbl"></span>
                                                     </label>
                                                 </div>
@@ -228,7 +229,7 @@
                                             <div class="profile-info-value">
 
                                                 <div class="col-sm-9">
-                                                    <select name="" id="select" class="form-control">
+                                                    <select name="deptId" id="select" class="form-control">
                                                         <option value="${map.dept_id}">${map.name}</option>
                                                     </select>
                                                 </div>
@@ -242,12 +243,12 @@
                                                 <div class="col-sm-9">
                                                     <div class="radio">
                                                         <label>
-                                                            <input name="gender" type="radio" class="ace" <c:if test="${map.gender == '0'}">checked</c:if> >
+                                                            <input name="gender" type="radio" value="0" class="ace" ${map.gender == '0' ? 'checked' : ''}>
                                                             <span class="lbl"> 男</span>
                                                         </label>
 
                                                         <label>
-                                                            <input name="gender" type="radio" class="ace"<c:if test="${map.gender == '1'}">checked</c:if> >
+                                                            <input name="gender" type="radio" value="1" class="ace" ${map.gender == '1' ? 'checked' : ''}>
                                                             <span class="lbl"> 女</span>
                                                         </label>
                                                     </div>
@@ -260,7 +261,7 @@
 
                                             <div class="profile-info-value">
                                                 <div class="col-sm-9">
-                                                    <input type="text" placeholder="Age"
+                                                    <input type="text" name="age" placeholder="Age"
                                                            class="col-xs-10 col-sm-5" value="${map.age}">
 
                                                 </div>
@@ -296,7 +297,7 @@
 
                                             <div class="profile-info-value">
                                                 <div class="col-sm-9">
-                                                    <textarea class="form-control" id="form-field-8"
+                                                    <textarea class="form-control" name="desc" id="form-field-8"
                                                               placeholder="introduction"
                                                     >${map.desc}</textarea>
                                                 </div>
@@ -309,7 +310,8 @@
 
                                             <div class="profile-info-value">
                                                 <div class="col-sm-9">
-                                                    <button class="btn btn-primary">修改资料</button>
+                                                    <button type="button" class="btn btn-primary" id="saveBtn">修改资料</button>
+                                                    <span id="saveMsg" style="margin-left:10px;"></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -367,6 +369,27 @@
 
         $("#imgBtn").on("click",function(){
             $("#imgForm").submit();
+        });
+
+        $("#saveBtn").on("click", function(){
+            var params = $("#profileForm").serializeArray();
+            var data = {};
+            $.each(params, function(i, field){
+                data[field.name] = field.value;
+            });
+            // serializeArray omits unchecked checkboxes; default isSecret to "0" if not present
+            if(!data["isSecret"]){
+                data["isSecret"] = "0";
+            }
+            $.post("${path}/user/updateInfo", data, function(result){
+                if(result.flag){
+                    $("#saveMsg").text("修改成功").css("color","green");
+                }else{
+                    $("#saveMsg").text(result.msg).css("color","red");
+                }
+            }, "json").fail(function(){
+                $("#saveMsg").text("请求失败，请重试").css("color","red");
+            });
         });
     })
 </script>
